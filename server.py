@@ -21,9 +21,73 @@ def quit_gracefully(signum, frame):
     global daemon_quit
     daemon_quit = True
 
-# Process the data sent in by client
-def process():
+
+# Process "LOGIN :USERNAME :PASSWORD"
+def login_pro(msg):
     pass
+
+
+# Process "REGISTER :USERNAME :PASSWORD"
+def register_pro(msg):
+    pass
+
+
+# Process "JOIN :CHANNEL"
+def join_pro(msg):
+    pass
+
+
+# Process "CREATE :CHANNEL"
+def create_pro(msg):
+    pass
+
+
+# Process "SAY :CHANNEL :MESSAGE"
+def say_pro(msg):
+    pass
+
+
+# Process "RECV :USER :CHANNEL :MESSAGE"
+def recv_pro(msg):
+    pass
+
+
+# Process "CHANNELS"
+def channel_pro(msg):
+    pass
+
+
+# Process "RESULT JOIN :CHANNEL :CONFIRMATION"
+def result_join(msg):
+    pass
+
+
+# Process "RESULT CREATE :CHANNEL :CONFIRMATION"
+def result_create(msg):
+    pass
+
+
+# Porcess "RESULT (LOGIN | REGISTER) :CONFIRMATION"
+def result_login(msg):
+    pass
+
+
+def result_register(msg):
+    pass
+
+
+# Process "RESULT CHANNELS [CHANNEL-NAME,. . . ]"
+def result_channels(msg):
+    pass
+
+
+# Process the data sent in by client
+def process(data):
+    # Get the key word
+    '''
+    Assuming only "message" will contain space
+    '''
+    key_word = str(data).split(" ")[0].strip()
 
 
 # Get data
@@ -33,7 +97,7 @@ def getData(con, addr):
     if data:
         con.send(data)
         # Process the data
-        process()
+        process(data)
     else:
         # Close connection
         sele.unregister(con)
@@ -55,7 +119,7 @@ def run():
     port_num = sys.argv[1]
     sock_con = socket.socket()
     sock_con.setblocking(False)
-    sock_con.bind(("", port_num))
+    sock_con.bind(("", int(port_num)))
     sock_con.listen(10)
     sele.register(sock_con, selectors.EVENT_READ, start_acc)
     # While the server is alive
