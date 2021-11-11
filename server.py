@@ -108,9 +108,11 @@ def process(data):
     # Get the key word
     # Assuming only "message" will contain space
     key_word = data.split(" ")[0].strip()
-    if key_word == "b'LOGIN":
+    if key_word == 'LOGIN':
+        print("hi1")
         return login_pro(data)
-    elif key_word == "b'REGISTER":
+    elif key_word == 'REGISTER':
+        print("hi2")
         return register_pro(data)
     elif key_word == 'JOIN':
         return join_pro(data)
@@ -131,7 +133,6 @@ def get_data(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
-        print(process(data))
         # Process the data and send the result to client
         con.send(process(data).encode('utf-8'))
 
