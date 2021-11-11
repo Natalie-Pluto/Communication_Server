@@ -4,6 +4,7 @@ import os
 import sys
 import socket
 import selectors
+import hashlib
 
 '''
 I referenced the follow website on how to establish asynchronous communication between client and server 
@@ -16,6 +17,18 @@ daemon_quit = False
 
 # Create instance of selectors
 sele = selectors.DefaultSelector()
+
+# Store username and password
+'''
+According to the clarification on ed, database should avoid persistence. 
+Therefore, I decide to use program memory rather than file.
+'''
+db_dict = {}
+
+# Store channels
+channels = {}
+
+
 #Do not modify or remove this handler
 def quit_gracefully(signum, frame):
     global daemon_quit
@@ -24,12 +37,45 @@ def quit_gracefully(signum, frame):
 
 # Process "LOGIN :USERNAME :PASSWORD"
 def login_pro(msg):
-    pass
+    username = str(msg).split(" ")[1]
+    # Check if this username exist
+    if username in db_dict:
+        # Check if the password matches
+        password = str(msg).split(" ")[2].strip()
+        # Get the value (salt + hashed password)
+        salt = (db_dict[username])[:32]
+        hashed_pwd = (db_dict[username])[32:]
+        # Hash the password provided
+        h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
+        # Compare the password provided with the recorded password
+        if hashed_pwd == h_pwd:
+            return "RESULT LOGIN 1"
+        else:
+            return "RESULT LOGIN 0"
 
 
 # Process "REGISTER :USERNAME :PASSWORD"
+'''
+I reference the follow website on how to hash the password using salt
+https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
+'''
 def register_pro(msg):
-    pass
+    username = str(msg).split(" ")[1]
+    # Check if the username is already existed
+    if username in db_dict:
+        return "RESULT REGISTER 0"
+    # Hash the password and record the key value pair
+    else:
+        # Get the password
+        password = str(msg).split(" ")[2]
+        # Generate a random salt value
+        salt = os.urandom(32)
+        # Hash the password
+        hashed_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
+        # Store salt + password as value into the dictionary
+        pwd_value = salt + hashed_pwd
+        db_dict[username] = pwd_value
+        return "RESULT REGISTER 1"
 
 
 # Process "JOIN :CHANNEL"
@@ -57,63 +103,26 @@ def channel_pro(msg):
     pass
 
 
-# Process "RESULT JOIN :CHANNEL :CONFIRMATION"
-def result_join(msg):
-    pass
-
-
-# Process "RESULT CREATE :CHANNEL :CONFIRMATION"
-def result_create(msg):
-    pass
-
-
-# Porcess "RESULT (LOGIN | REGISTER) :CONFIRMATION"
-def result_login(msg):
-    pass
-
-
-def result_register(msg):
-    pass
-
-
-# Process "RESULT CHANNELS [CHANNEL-NAME,. . . ]"
-def result_channels(msg):
-    pass
-
-
-# Further process "RESULT" commands into their types
-def further_result(msg):
-    pass
-
-
 # Process the data sent in by client
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
     key_word = str(data).split(" ")[0].strip()
     if key_word == 'LOGIN':
-        login_pro(data)
+        return login_pro(data)
     elif key_word == 'REGISTER':
-        register_pro(data)
+        return register_pro(data)
     elif key_word == 'JOIN':
-        join_pro(data)
+        return join_pro(data)
     elif key_word == 'CREATE':
-        create_pro(data)
+        return create_pro(data)
     elif key_word == 'SAY':
-        say_pro(data)
+        return say_pro(data)
     elif key_word == 'RECV':
-        recv_pro(data)
+        return recv_pro(data)
     elif key_word == 'CHANNELS':
-        channel_pro(data)
-    elif key_word == 'RESULT':
-        further_result(data)
+        return channel_pro(data)
     else:
-        '''
-        Justification:
-        According to the spec & Tiancheng's confirmation on ed: 
-        The client and server are aware of the types of messages they can send to and receive from each other.
-        Any messages that lie outside of the specified protocols can safely be ignored.
-        '''
         pass
 
 
@@ -122,9 +131,8 @@ def getData(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
-        con.send('haha')
-        # Process the data
-        process(data)
+        # Process the data and send the result to client
+        con.send(process(data))
     else:
         # Close connection
         sele.unregister(con)
