@@ -107,10 +107,10 @@ def channel_pro(msg):
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
-    key_word = str(data).split(" ")[0].strip()
-    if key_word == "b'LOGIN":
+    key_word = data.split(" ")[0].strip().decode('utf-8')
+    if key_word == "LOGIN":
         return login_pro(data)
-    elif key_word == "b'REGISTER":
+    elif key_word == "REGISTER":
         return register_pro(data)
     elif key_word == "b'JOIN":
         return join_pro(data)
