@@ -132,7 +132,8 @@ def getData(con, addr):
     # If there's data
     if data:
         # Process the data and send the result to client
-        con.send(process(data))
+        con.send(data)
+        process(data)
     else:
         # Close connection
         sele.unregister(con)
