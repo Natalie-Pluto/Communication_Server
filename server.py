@@ -81,13 +81,40 @@ def result_channels(msg):
     pass
 
 
+# Further process "RESULT" commands into their types
+def further_result(msg):
+    pass
+
+
 # Process the data sent in by client
 def process(data):
     # Get the key word
-    '''
-    Assuming only "message" will contain space
-    '''
+    # Assuming only "message" will contain space
     key_word = str(data).split(" ")[0].strip()
+    if key_word == 'LOGIN':
+        login_pro(data)
+    elif key_word == 'REGISTER':
+        register_pro(data)
+    elif key_word == 'JOIN':
+        join_pro(data)
+    elif key_word == 'CREATE':
+        create_pro(data)
+    elif key_word == 'SAY':
+        say_pro(data)
+    elif key_word == 'RECV':
+        recv_pro(data)
+    elif key_word == 'CHANNELS':
+        channel_pro(data)
+    elif key_word == 'RESULT':
+        further_result(data)
+    else:
+        '''
+        Justification:
+        According to the spec & Tiancheng's confirmation on ed: 
+        The client and server are aware of the types of messages they can send to and receive from each other.
+        Any messages that lie outside of the specified protocols can safely be ignored.
+        '''
+        pass
 
 
 # Get data
@@ -95,7 +122,7 @@ def getData(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
-        con.send(data)
+        con.send('haha')
         # Process the data
         process(data)
     else:
