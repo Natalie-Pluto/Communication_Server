@@ -107,7 +107,7 @@ def channel_pro(msg):
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
-    key_word = data.split(" ")[0].strip()
+    key_word = str(data).split(" ")[0].strip()
     if key_word == 'LOGIN':
         print("hi1")
         return login_pro(data)
