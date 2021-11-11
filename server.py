@@ -107,7 +107,7 @@ def channel_pro(msg):
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
-    key_word = str(data).split(" ")[0].strip()
+    key_word = data.split(" ")[0].strip()
     if key_word == 'LOGIN':
         return login_pro(data)
     elif key_word == 'REGISTER':
@@ -131,7 +131,7 @@ def get_data(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
-        print(process(data))
+        print(data.split(" ")[0].strip())
         # Process the data and send the result to client
         con.send(process(data).encode('utf-8'))
 
