@@ -127,12 +127,11 @@ def process(data):
 
 
 # Get data
-def getData(con, addr):
+def get_data(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
-        print(data)
-        print(str(data))
+        print(str(data).split(" ")[0].strip())
         # Process the data and send the result to client
         con.send(process(data).encode('utf-8'))
 
@@ -149,7 +148,7 @@ def start_acc(sock, mask):
     con, addr = sock.accept()
     # Set non-blocking
     con.setblocking(False)
-    sele.register(con, selectors.EVENT_READ, getData)
+    sele.register(con, selectors.EVENT_READ, get_data)
 
 
 def run():
