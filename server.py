@@ -49,9 +49,9 @@ def login_pro(msg):
         h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Compare the password provided with the recorded password
         if hashed_pwd == h_pwd:
-            return "RESULT LOGIN 1"
+            return "RESULT LOGIN 1\n"
         else:
-            return "RESULT LOGIN 0"
+            return "RESULT LOGIN 0\n"
 
 
 # Process "REGISTER :USERNAME :PASSWORD"
@@ -63,7 +63,7 @@ def register_pro(msg):
     username = str(msg).split(" ")[1]
     # Check if the username is already existed
     if username in db_dict:
-        return "RESULT REGISTER 0"
+        return "RESULT REGISTER 0\n"
     # Hash the password and record the key value pair
     else:
         # Get the password
@@ -75,7 +75,7 @@ def register_pro(msg):
         # Store salt + password as value into the dictionary
         pwd_value = salt + hashed_pwd
         db_dict[username] = pwd_value
-        return "RESULT REGISTER 1"
+        return "RESULT REGISTER 1\n"
 
 
 # Process "JOIN :CHANNEL"
@@ -109,20 +109,18 @@ def process(data):
     # Assuming only "message" will contain space
     key_word = str(data).split(" ")[0].strip()
     if key_word == "b'LOGIN":
-        print("hi1")
         return login_pro(data)
     elif key_word == "b'REGISTER":
-        print("hi2")
         return register_pro(data)
-    elif key_word == 'JOIN':
+    elif key_word == "b'JOIN":
         return join_pro(data)
-    elif key_word == 'CREATE':
+    elif key_word == "b'CREATE":
         return create_pro(data)
-    elif key_word == 'SAY':
+    elif key_word == "b'SAY":
         return say_pro(data)
-    elif key_word == 'RECV':
+    elif key_word == "b'RECV":
         return recv_pro(data)
-    elif key_word == 'CHANNELS':
+    elif key_word == "b'CHANNELS":
         return channel_pro(data)
     else:
         pass
