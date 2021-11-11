@@ -108,10 +108,10 @@ def process(data):
     # Get the key word
     # Assuming only "message" will contain space
     key_word = str(data).split(" ")[0].strip()
-    if key_word == 'LOGIN':
+    if key_word == "b'LOGIN":
         print("hi1")
         return login_pro(data)
-    elif key_word == 'REGISTER':
+    elif key_word == "b'REGISTER":
         print("hi2")
         return register_pro(data)
     elif key_word == 'JOIN':
