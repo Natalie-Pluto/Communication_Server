@@ -131,6 +131,8 @@ def getData(con, addr):
     data = con.recv(1024)
     # If there's data
     if data:
+        print(data)
+        print(str(data))
         # Process the data and send the result to client
         con.send(process(data).encode('utf-8'))
 
