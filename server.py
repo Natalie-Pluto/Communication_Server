@@ -39,7 +39,7 @@ def quit_gracefully(signum, frame):
 
 # Process "LOGIN :USERNAME :PASSWORD"
 def login_pro(msg, raddr):
-    username = msg.split(" ")[1]
+    username = msg.split(" ")[1].strip()
     # Check if the client has logged a user
     for key, value in db_dict.items():
         for v in value:
@@ -49,7 +49,7 @@ def login_pro(msg, raddr):
     # Check if this username exist
     if db_dict.get(username, False):
         # Check if the user has logged in already
-        if db_dict[username]['socket'] == 'na':
+        if db_dict[username]["socket"] == 'na':
             # Check if the password matches
             password = msg.split(" ")[2].strip()
             # Get the value (salt + hashed password)
@@ -59,7 +59,7 @@ def login_pro(msg, raddr):
             h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
             # Compare the password provided with the recorded password
             if hashed_pwd == h_pwd:
-                db_dict[username]['socket'] = raddr
+                db_dict[username]["socket"] = raddr
                 return "RESULT LOGIN 1\n"
 
     return "RESULT LOGIN 0\n"
@@ -71,7 +71,7 @@ I reference the follow website on how to hash the password using salt
 https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
 '''
 def register_pro(msg):
-    username = msg.split(" ")[1]
+    username = msg.split(" ")[1].strip()
     # Check if the username is already existed
     if db_dict.get(username, False):
         return "RESULT REGISTER 0\n"
@@ -121,7 +121,7 @@ def create_pro(msg, raddr):
                 if v == "socket":
                     if value[v] == raddr:
                         # User is logged in, add this channel into database
-                        channels[channel_name] = ''
+                        channels[channel_name] = ""
                         return "RESULT CREATE " + str(channel_name) + " 1\n"
     return "RESULT CREATE " + str(channel_name) + " 0\n"
 
@@ -171,7 +171,7 @@ def get_data(con, mask):
         # If there's data
         if data:
             # Process the data and send the result to client
-            con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
+            con.send(process(data.decode('utf-8'), str(con.getpeername())).encode('utf-8'))
     except Exception:
         # Close connection
         sele.unregister(con)
