@@ -23,7 +23,7 @@ According to the clarification on ed, database should avoid persistence.
 Therefore, I decide to use program memory rather than file.
 '''
 # Nested dictionary storing username, password, socket
-# {'username': {'password': 'salt + hashed pwd', 'socket':'raddr/ null'}
+# {'username': {'password': 'hashed pwd', 'socket':'raddr/ null'}
 db_dict = {}
 
 # Dictionary storing channels and the users joined in each channel
@@ -44,10 +44,7 @@ def login_pro(msg, raddr):
     for key, value in db_dict.items():
         for v in value:
             if v == 'socket':
-                print(raddr)
-                print(value[v])
                 if value[v] == raddr:
-                    print("1")
                     return "RESULT LOGIN 0\n"
     # Check if this username exist
     print(db_dict.get(username, False))
@@ -61,6 +58,8 @@ def login_pro(msg, raddr):
             # Hash the password provided
             h_pwd = hashlib.md5(password.encode())
             # Compare the password provided with the recorded password
+            print(h_pwd)
+            print(hashed_pwd)
             if hashed_pwd == h_pwd:
                 db_dict[username]['socket'] = raddr
                 return "RESULT LOGIN 1\n"
@@ -69,10 +68,6 @@ def login_pro(msg, raddr):
 
 
 # Process "REGISTER :USERNAME :PASSWORD"
-'''
-I reference the follow website on how to hash the password using salt
-https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
-'''
 def register_pro(msg):
     username = msg.split(" ")[1].strip()
     # Check if the username is already existed
