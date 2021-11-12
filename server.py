@@ -110,10 +110,10 @@ def channel_pro(msg):
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
-    key_word = str(data).split(" ")[0].strip()
-    if key_word == "b'LOGIN":
+    key_word = data.split(" ")[0].strip()
+    if key_word == "LOGIN":
         return login_pro(data)
-    elif key_word == "b'REGISTER":
+    elif key_word == "REGISTER":
         return register_pro(data)
     elif key_word == "b'JOIN":
         return join_pro(data)
@@ -135,7 +135,7 @@ def get_data(con, addr):
     # If there's data
     if data:
         # Process the data and send the result to client
-        con.send(process(data).encode('utf-8'))
+        con.send(process(data.decode('utf-8')).encode('utf-8'))
 
     else:
         # Close connection
