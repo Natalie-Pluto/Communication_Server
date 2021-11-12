@@ -40,11 +40,11 @@ def quit_gracefully(signum, frame):
 
 # Process "LOGIN :USERNAME :PASSWORD"
 def login_pro(msg):
-    username = str(msg).split(" ")[1]
+    username = msg.split(" ")[1]
     # Check if this username exist
     if username in db_dict:
         # Check if the password matches
-        password = str(msg).split(" ")[2].strip()
+        password = msg.split(" ")[2].strip()
         # Get the value (salt + hashed password)
         salt = (db_dict[username])[:32]
         hashed_pwd = (db_dict[username])[32:]
@@ -63,14 +63,14 @@ I reference the follow website on how to hash the password using salt
 https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
 '''
 def register_pro(msg):
-    username = str(msg).split(" ")[1]
+    username = msg.split(" ")[1]
     # Check if the username is already existed
     if username in db_dict:
         return "RESULT REGISTER 0\n"
     # Hash the password and record the key value pair
     else:
         # Get the password
-        password = str(msg).split(" ")[2]
+        password = msg.split(" ")[2]
         # Generate a random salt value
         salt = os.urandom(32)
         # Hash the password
