@@ -87,7 +87,7 @@ def register_pro(msg):
         pwd_value = salt + hashed_pwd
         db_dict[username] = {}
         db_dict[username]['password'] = pwd_value
-        db_dict[username]['socket'] = 'na'
+        db_dict[username]["socket"] = 'na'
         return "RESULT REGISTER 1\n"
 
 
@@ -175,7 +175,6 @@ def get_data(con, mask):
     except Exception:
         # Close connection
         sele.unregister(con)
-
         # Close socket
         con.close()
 
