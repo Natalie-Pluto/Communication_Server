@@ -22,14 +22,13 @@ sele = selectors.DefaultSelector()
 According to the clarification on ed, database should avoid persistence. 
 Therefore, I decide to use program memory rather than file.
 '''
-# Nested dictionary storing username, password, user's state (logged in/ logged out), joined channel
-# {'username': {'password': 'salt+hashed pwd', 'state':'true/false', 'channels': 'channels'}}
+# Nested dictionary storing username, password, socket
+# {'username': {'password': 'salt + hashed pwd', 'socket':'raddr/ null'}
 db_dict = {}
 
-# Store channels
+# Dictionary storing channels and the users joined in each channel
+# {'channel': 'username1 username2...'}
 channels = {}
-
-
 
 
 #Do not modify or remove this handler
@@ -39,22 +38,35 @@ def quit_gracefully(signum, frame):
 
 
 # Process "LOGIN :USERNAME :PASSWORD"
-def login_pro(msg):
+def login_pro(msg, raddr):
     username = msg.split(" ")[1]
+    # Check if the client has logged a user
+    # According to the clarification on ed
+    # "An user can only login one client at any time. Attempt to login an already logged-in user should be rejected."
+    for key, value in db_dict.items():
+        for v in value:
+            if v == "socket":
+                if value[v] == raddr:
+                    return "RESULT LOGIN 0\n"
     # Check if this username exist
-    if username in db_dict:
+    if db_dict.get(username, False):
+        # Check if the user has logged in already
+        if db_dict[username]['socket'] != 'na':
+            return "RESULT LOGIN 0\n"
         # Check if the password matches
         password = msg.split(" ")[2].strip()
         # Get the value (salt + hashed password)
-        salt = (db_dict[username])[:32]
-        hashed_pwd = (db_dict[username])[32:]
+        salt = (db_dict[username]['password'])[:32]
+        hashed_pwd = (db_dict[username]['password'])[32:]
         # Hash the password provided
         h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Compare the password provided with the recorded password
         if hashed_pwd == h_pwd:
+            db_dict[username]['socket'] = raddr
             return "RESULT LOGIN 1\n"
         else:
             return "RESULT LOGIN 0\n"
+    return "RESULT LOGIN 0\n"
 
 
 # Process "REGISTER :USERNAME :PASSWORD"
@@ -65,7 +77,7 @@ https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
 def register_pro(msg):
     username = msg.split(" ")[1]
     # Check if the username is already existed
-    if username in db_dict:
+    if db_dict.get(username, False):
         return "RESULT REGISTER 0\n"
     # Hash the password and record the key value pair
     else:
@@ -77,18 +89,45 @@ def register_pro(msg):
         hashed_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Store salt + password as value into the dictionary
         pwd_value = salt + hashed_pwd
-        db_dict[username] = pwd_value
+        db_dict[username] = {}
+        db_dict[username]['password'] = pwd_value
+        db_dict[username]['socket'] = 'na'
         return "RESULT REGISTER 1\n"
 
 
 # Process "JOIN :CHANNEL"
-def join_pro(msg):
-    pass
+def join_pro(msg, raddr):
+    channel_name = msg.split(" ")[1].strip()
+    # Check if this channel exist
+    if channel_name in channels:
+        # Check if the user is logged in & in this channel
+        for key, value in db_dict.items():
+            for v in value:
+                if v == "socket":
+                    if value[v] == raddr:
+                        # User is logged in, check if he/she has joined the channel
+                        if str(key) not in str(channels[channel_name]):
+                            # Add user to the channel
+                            users = channels[channel_name]
+                            channels[channel_name] = users + " " + key
+                            return "RESULT JOIN " + channel_name + " 1\n"
+    return "RESULT JOIN " + channel_name + " 0\n"
 
 
 # Process "CREATE :CHANNEL"
-def create_pro(msg):
-    pass
+def create_pro(msg, raddr):
+    channel_name = msg.split(" ")[1].strip()
+    # Check if this channel exist
+    if channel_name not in channels:
+        # Check if the user is logged in
+        for key, value in db_dict.items():
+            for v in value:
+                if v == "socket":
+                    if value[v] == raddr:
+                        # User is logged in, add this channel into database
+                        channels[channel_name] = ''
+                        return "RESULT CREATE " + channel_name + " 1\n"
+    return "RESULT CREATE " + channel_name + " 0\n"
 
 
 # Process "SAY :CHANNEL :MESSAGE"
@@ -107,39 +146,46 @@ def channel_pro(msg):
 
 
 # Process the data sent in by client
-def process(data):
+def process(data, raddr):
     # Get the key word
     # Assuming only "message" will contain space
     key_word = data.split(" ")[0].strip()
     if key_word == "LOGIN":
-        return login_pro(data)
+        return login_pro(data, raddr)
     elif key_word == "REGISTER":
         return register_pro(data)
-    elif key_word == "b'JOIN":
-        return join_pro(data)
-    elif key_word == "b'CREATE":
-        return create_pro(data)
-    elif key_word == "b'SAY":
+    elif key_word == "JOIN":
+        return join_pro(data, raddr)
+    elif key_word == "CREATE":
+        return create_pro(data, raddr)
+    elif key_word == "SAY":
         return say_pro(data)
-    elif key_word == "b'RECV":
+    elif key_word == "RECV":
         return recv_pro(data)
-    elif key_word == "b'CHANNELS":
+    elif key_word == "CHANNELS":
         return channel_pro(data)
     else:
         pass
 
 
 # Get data
-def get_data(con, addr):
+def get_data(con, mask):
     data = con.recv(1024)
     # If there's data
     if data:
         # Process the data and send the result to client
-        con.send(process(data.decode('utf-8')).encode('utf-8'))
+        con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
 
     else:
         # Close connection
         sele.unregister(con)
+        raddr = con.getpeername()
+        # Log out the user
+        for key, value in db_dict.items():
+            for v in value:
+                if v == "socket":
+                    if value[v] == raddr:
+                        db_dict[key][v] = 'na'
         # Close socket
         con.close()
 
@@ -158,16 +204,15 @@ def run():
     port_num = sys.argv[1]
     sock_con = socket.socket()
     sock_con.setblocking(False)
-    sock_con.bind(("", int(port_num)))
+    sock_con.bind(('localhost', int(port_num)))
     sock_con.listen(10)
     sele.register(sock_con, selectors.EVENT_READ, start_acc)
     # While the server is alive
     while not daemon_quit:
         messages = sele.select()
         for key, mask in messages:
-            # Call accept function
+            # Call accept method
             call_accept = key.data
-            # Get accept function's address, sending in parameters
             call_accept(key.fileobj, mask)
 
     #Do not modify or remove this function call
