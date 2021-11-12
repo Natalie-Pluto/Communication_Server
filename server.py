@@ -43,13 +43,13 @@ def login_pro(msg, raddr):
     # Check if the client has logged a user
     for key, value in db_dict.items():
         for v in value:
-            if v == "socket":
+            if v == 'socket':
                 if value[v] == raddr:
                     return "RESULT LOGIN 0\n"
     # Check if this username exist
     if db_dict.get(username, False):
         # Check if the user has logged in already
-        if db_dict[username]["socket"] == 'na':
+        if db_dict[username]['socket'] == 'na':
             # Check if the password matches
             password = msg.split(" ")[2].strip()
             # Get the value (salt + hashed password)
@@ -59,7 +59,7 @@ def login_pro(msg, raddr):
             h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
             # Compare the password provided with the recorded password
             if hashed_pwd == h_pwd:
-                db_dict[username]["socket"] = raddr
+                db_dict[username]['socket'] = raddr
                 return "RESULT LOGIN 1\n"
 
     return "RESULT LOGIN 0\n"
@@ -87,7 +87,7 @@ def register_pro(msg):
         pwd_value = salt + hashed_pwd
         db_dict[username] = {}
         db_dict[username]['password'] = pwd_value
-        db_dict[username]["socket"] = 'na'
+        db_dict[username]['socket'] = 'na'
         return "RESULT REGISTER 1\n"
 
 
@@ -99,7 +99,7 @@ def join_pro(msg, raddr):
         # Check if the user is logged in & in this channel
         for key, value in db_dict.items():
             for v in value:
-                if v == "socket":
+                if v == 'socket':
                     if value[v] == raddr:
                         # User is logged in, check if he/she has joined the channel
                         if str(key) not in str(channels[channel_name]):
@@ -121,7 +121,7 @@ def create_pro(msg, raddr):
                 if v == "socket":
                     if value[v] == raddr:
                         # User is logged in, add this channel into database
-                        channels[channel_name] = ""
+                        channels[channel_name] = ''
                         return "RESULT CREATE " + str(channel_name) + " 1\n"
     return "RESULT CREATE " + str(channel_name) + " 0\n"
 
