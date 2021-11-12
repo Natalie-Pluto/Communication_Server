@@ -57,10 +57,9 @@ def login_pro(msg, raddr):
             # Check if the password matches
             password = msg.split(" ")[2].strip()
             # Get the value (salt + hashed password)
-            salt = (db_dict[username]['password'])[:32]
-            hashed_pwd = (db_dict[username]['password'])[32:]
+            hashed_pwd = db_dict[username]['password']
             # Hash the password provided
-            h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
+            h_pwd = hashlib.md5(password.encode())
             # Compare the password provided with the recorded password
             if hashed_pwd == h_pwd:
                 db_dict[username]['socket'] = raddr
@@ -83,14 +82,11 @@ def register_pro(msg):
     else:
         # Get the password
         password = msg.split(" ")[2].strip()
-        # Generate a random salt value
-        salt = os.urandom(32)
         # Hash the password
-        hashed_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
+        hashed_pwd = hashlib.md5(password.encode())
         # Store salt + password as value into the dictionary
-        pwd_value = salt + hashed_pwd
         db_dict[username] = {}
-        db_dict[username]['password'] = pwd_value
+        db_dict[username]['password'] = hashed_pwd
         db_dict[username]['socket'] = 'na'
         return "RESULT REGISTER 1\n"
 
