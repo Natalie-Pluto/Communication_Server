@@ -41,8 +41,6 @@ def quit_gracefully(signum, frame):
 def login_pro(msg, raddr):
     username = msg.split(" ")[1]
     # Check if the client has logged a user
-    # According to the clarification on ed
-    # "An user can only login one client at any time. Attempt to login an already logged-in user should be rejected."
     for key, value in db_dict.items():
         for v in value:
             if v == "socket":
@@ -51,21 +49,19 @@ def login_pro(msg, raddr):
     # Check if this username exist
     if db_dict.get(username, False):
         # Check if the user has logged in already
-        if db_dict[username]['socket'] != 'na':
-            return "RESULT LOGIN 0\n"
-        # Check if the password matches
-        password = msg.split(" ")[2].strip()
-        # Get the value (salt + hashed password)
-        salt = (db_dict[username]['password'])[:32]
-        hashed_pwd = (db_dict[username]['password'])[32:]
-        # Hash the password provided
-        h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
-        # Compare the password provided with the recorded password
-        if hashed_pwd == h_pwd:
-            db_dict[username]['socket'] = raddr
-            return "RESULT LOGIN 1\n"
-        else:
-            return "RESULT LOGIN 0\n"
+        if db_dict[username]['socket'] == 'na':
+            # Check if the password matches
+            password = msg.split(" ")[2].strip()
+            # Get the value (salt + hashed password)
+            salt = (db_dict[username]['password'])[:32]
+            hashed_pwd = (db_dict[username]['password'])[32:]
+            # Hash the password provided
+            h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
+            # Compare the password provided with the recorded password
+            if hashed_pwd == h_pwd:
+                db_dict[username]['socket'] = raddr
+                return "RESULT LOGIN 1\n"
+
     return "RESULT LOGIN 0\n"
 
 
@@ -173,7 +169,6 @@ def get_data(con, mask):
     data = con.recv(1024)
     # If there's data
     if data:
-        print(data)
         # Process the data and send the result to client
         con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
 
@@ -187,6 +182,7 @@ def get_data(con, mask):
                 if v == "socket":
                     if value[v] == raddr:
                         db_dict[key][v] = 'na'
+                        con.send("closed")
         # Close socket
         con.close()
 
