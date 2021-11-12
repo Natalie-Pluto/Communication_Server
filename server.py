@@ -173,6 +173,7 @@ def get_data(con, mask):
     data = con.recv(1024)
     # If there's data
     if data:
+        print(data)
         # Process the data and send the result to client
         con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
 
