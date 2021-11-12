@@ -70,7 +70,7 @@ def register_pro(msg):
     # Hash the password and record the key value pair
     else:
         # Get the password
-        password = msg.split(" ")[2]
+        password = msg.split(" ")[2].strip()
         # Generate a random salt value
         salt = os.urandom(32)
         # Hash the password
