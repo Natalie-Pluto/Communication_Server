@@ -44,9 +44,13 @@ def login_pro(msg, raddr):
     for key, value in db_dict.items():
         for v in value:
             if v == 'socket':
+                print(raddr)
+                print(value[v])
                 if value[v] == raddr:
+                    print("1")
                     return "RESULT LOGIN 0\n"
     # Check if this username exist
+    print(db_dict.get(username, False))
     if db_dict.get(username, False):
         # Check if the user has logged in already
         if db_dict[username]['socket'] == 'na':
@@ -171,7 +175,7 @@ def get_data(con, mask):
         # If there's data
         if data:
             # Process the data and send the result to client
-            con.send(process(data.decode('utf-8'), str(con.getpeername())).encode('utf-8'))
+            con.send(process(data.decode('utf-8').strip(), str(con.getpeername())).encode('utf-8'))
     except Exception:
         # Close connection
         sele.unregister(con)
