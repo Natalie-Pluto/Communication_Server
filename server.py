@@ -170,7 +170,7 @@ def get_data(con, mask):
     # If there's data
     if data:
         # Process the data and send the result to client
-        con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
+        con.send("ha")
 
     else:
         # Close connection
@@ -182,7 +182,6 @@ def get_data(con, mask):
                 if v == "socket":
                     if value[v] == raddr:
                         db_dict[key][v] = 'na'
-                        con.send("closed")
         # Close socket
         con.close()
 
