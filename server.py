@@ -46,8 +46,8 @@ def login_pro(msg):
         # Check if the password matches
         password = str(msg).split(" ")[2].strip()
         # Get the value (salt + hashed password)
-        salt = (db_dict[username]['password'])[:32]
-        hashed_pwd = (db_dict[username]['password'])[32:]
+        salt = (db_dict[username])[:32]
+        hashed_pwd = (db_dict[username])[32:]
         # Hash the password provided
         h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Compare the password provided with the recorded password
@@ -77,7 +77,7 @@ def register_pro(msg):
         hashed_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Store salt + password as value into the dictionary
         pwd_value = salt + hashed_pwd
-        db_dict[username]['password'] = pwd_value
+        db_dict[username] = pwd_value
         return "RESULT REGISTER 1\n"
 
 
