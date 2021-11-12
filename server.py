@@ -106,8 +106,8 @@ def join_pro(msg, raddr):
                             # Add user to the channel
                             users = channels[channel_name]
                             channels[channel_name] = users + " " + key
-                            return "RESULT JOIN " + channel_name + " 1\n"
-    return "RESULT JOIN " + channel_name + " 0\n"
+                            return "RESULT JOIN " + str(channel_name) + " 1\n"
+    return "RESULT JOIN " + str(channel_name) + " 0\n"
 
 
 # Process "CREATE :CHANNEL"
@@ -122,8 +122,8 @@ def create_pro(msg, raddr):
                     if value[v] == raddr:
                         # User is logged in, add this channel into database
                         channels[channel_name] = ''
-                        return "RESULT CREATE " + channel_name + " 1\n"
-    return "RESULT CREATE " + channel_name + " 0\n"
+                        return "RESULT CREATE " + str(channel_name) + " 1\n"
+    return "RESULT CREATE " + str(channel_name) + " 0\n"
 
 
 # Process "SAY :CHANNEL :MESSAGE"
@@ -166,24 +166,19 @@ def process(data, raddr):
 
 # Get data
 def get_data(con, mask):
-    data = con.recv(1024)
-    # If there's data
-    if data:
-        # Process the data and send the result to client
-        con.send("ha")
-
-    else:
+    try:
+        data = con.recv(1024)
+        # If there's data
+        if data:
+            # Process the data and send the result to client
+            con.send(process(data.decode('utf-8'), con.getpeername()).encode('utf-8'))
+    except Exception:
         # Close connection
         sele.unregister(con)
-        raddr = con.getpeername()
-        # Log out the user
-        for key, value in db_dict.items():
-            for v in value:
-                if v == "socket":
-                    if value[v] == raddr:
-                        db_dict[key][v] = 'na'
+
         # Close socket
         con.close()
+
 
 
 
