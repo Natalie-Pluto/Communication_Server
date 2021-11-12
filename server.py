@@ -194,9 +194,9 @@ def run():
     # Get the port
     port_num = sys.argv[1]
     sock_con = socket.socket()
-    sock_con.setblocking(False)
     sock_con.bind(('localhost', int(port_num)))
-    sock_con.listen(10)
+    sock_con.listen(100)
+    sock_con.setblocking(False)
     sele.register(sock_con, selectors.EVENT_READ, start_acc)
     # While the server is alive
     while not daemon_quit:
