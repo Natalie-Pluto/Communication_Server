@@ -58,9 +58,7 @@ def login_pro(msg, raddr):
             # Hash the password provided
             h_pwd = hashlib.md5(password.encode())
             # Compare the password provided with the recorded password
-            print(h_pwd)
-            print(hashed_pwd)
-            if hashed_pwd == h_pwd:
+            if hashed_pwd in h_pwd:
                 db_dict[username]['socket'] = raddr
                 return "RESULT LOGIN 1\n"
 
