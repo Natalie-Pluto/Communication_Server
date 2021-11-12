@@ -18,15 +18,18 @@ daemon_quit = False
 # Create instance of selectors
 sele = selectors.DefaultSelector()
 
-# Store username and password
 '''
 According to the clarification on ed, database should avoid persistence. 
 Therefore, I decide to use program memory rather than file.
 '''
+# Nested dictionary storing username, password, user's state (logged in/ logged out), joined channel
+# {'username': {'password': 'salt+hashed pwd', 'state':'true/false', 'channels': 'channels'}}
 db_dict = {}
 
 # Store channels
 channels = {}
+
+
 
 
 #Do not modify or remove this handler
@@ -43,8 +46,8 @@ def login_pro(msg):
         # Check if the password matches
         password = str(msg).split(" ")[2].strip()
         # Get the value (salt + hashed password)
-        salt = (db_dict[username])[:32]
-        hashed_pwd = (db_dict[username])[32:]
+        salt = (db_dict[username]['password'])[:32]
+        hashed_pwd = (db_dict[username]['password'])[32:]
         # Hash the password provided
         h_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Compare the password provided with the recorded password
@@ -74,7 +77,7 @@ def register_pro(msg):
         hashed_pwd = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 1000000)
         # Store salt + password as value into the dictionary
         pwd_value = salt + hashed_pwd
-        db_dict[username] = pwd_value
+        db_dict[username]['password'] = pwd_value
         return "RESULT REGISTER 1\n"
 
 
@@ -107,10 +110,10 @@ def channel_pro(msg):
 def process(data):
     # Get the key word
     # Assuming only "message" will contain space
-    key_word = data.split(" ")[0].strip().decode('utf-8')
-    if key_word == "LOGIN":
+    key_word = str(data).split(" ")[0].strip()
+    if key_word == "b'LOGIN":
         return login_pro(data)
-    elif key_word == "REGISTER":
+    elif key_word == "b'REGISTER":
         return register_pro(data)
     elif key_word == "b'JOIN":
         return join_pro(data)
