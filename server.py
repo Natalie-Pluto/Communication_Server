@@ -47,7 +47,6 @@ def login_pro(msg, raddr):
                 if value[v] == raddr:
                     return "RESULT LOGIN 0\n"
     # Check if this username exist
-    print(db_dict.get(username, False))
     if db_dict.get(username, False):
         # Check if the user has logged in already
         if db_dict[username]['socket'] == 'na':
