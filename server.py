@@ -38,13 +38,13 @@ def quit_gracefully(signum, frame):
 
 
 # Process "LOGIN :USERNAME :PASSWORD"
-def login_pro(msg, raddr):
+def login_pro(msg, con):
     username = msg.split(" ")[1].strip()
     # Check if the client has logged a user
     for key, value in db_dict.items():
         for v in value:
             if v == 'socket':
-                if value[v] == raddr:
+                if value[v] == con:
                     return "RESULT LOGIN 0\n"
     # Check if this username exist
     if db_dict.get(username, False):
@@ -58,7 +58,7 @@ def login_pro(msg, raddr):
             h_pwd = hashlib.md5(password.encode())
             # Compare the password provided with the recorded password
             if hashed_pwd.hexdigest() == h_pwd.hexdigest():
-                db_dict[username]['socket'] = raddr
+                db_dict[username]['socket'] = con
                 return "RESULT LOGIN 1\n"
 
     return "RESULT LOGIN 0\n"
@@ -84,7 +84,7 @@ def register_pro(msg):
 
 
 # Process "JOIN :CHANNEL"
-def join_pro(msg, raddr):
+def join_pro(msg, con):
     channel_name = msg.split(" ")[1].strip()
     # Check if this channel exist
     if channel_name in channels:
@@ -92,7 +92,7 @@ def join_pro(msg, raddr):
         for key, value in db_dict.items():
             for v in value:
                 if v == 'socket':
-                    if value[v] == raddr:
+                    if value[v] == con:
                         # User is logged in, check if he/she has joined the channel
                         if str(key) not in str(channels[channel_name]):
                             # Add user to the channel
@@ -103,7 +103,7 @@ def join_pro(msg, raddr):
 
 
 # Process "CREATE :CHANNEL"
-def create_pro(msg, raddr):
+def create_pro(msg, con):
     channel_name = msg.split(" ")[1].strip()
     # Check if this channel exist
     if channel_name not in channels:
@@ -111,7 +111,7 @@ def create_pro(msg, raddr):
         for key, value in db_dict.items():
             for v in value:
                 if v == "socket":
-                    if value[v] == raddr:
+                    if value[v] == con:
                         # User is logged in, add this channel into database
                         channels[channel_name] = ''
                         return "RESULT CREATE " + str(channel_name) + " 1\n"
@@ -145,18 +145,18 @@ def channel_pro():
 
 
 # Process the data sent in by client
-def process(data, raddr):
+def process(data, con):
     # Get the key word
     # Assuming only "message" will contain space
     key_word = data.split(" ")[0].strip()
     if key_word == "LOGIN":
-        return login_pro(data, raddr)
+        return login_pro(data, con)
     elif key_word == "REGISTER":
         return register_pro(data)
     elif key_word == "JOIN":
-        return join_pro(data, raddr)
+        return join_pro(data, con)
     elif key_word == "CREATE":
-        return create_pro(data, raddr)
+        return create_pro(data, con)
     elif key_word == "SAY":
         return say_pro(data)
     elif key_word == "RECV":
@@ -174,7 +174,7 @@ def get_data(con, mask):
         # If there's data
         if data:
             # Process the data and send the result to client
-            con.send(process(data.decode('utf-8').strip(), str(con.getpeername())).encode('utf-8'))
+            con.send(process(data.decode('utf-8').strip(), con).encode('utf-8'))
     except Exception:
         # Close connection
         sele.unregister(con)
