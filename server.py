@@ -129,8 +129,19 @@ def recv_pro(msg):
 
 
 # Process "CHANNELS"
-def channel_pro(msg):
-    pass
+def channel_pro():
+    # return all channels stored in the dictionary
+    channel_list = list(channels.keys())
+    # Format the list
+    format_list = "RESULT CHANNELS "
+    i = 0
+    while i < len(channel_list):
+        if i == len(channel_list) - 1:
+            format_list = format_list + channel_list[i]
+        else:
+            format_list = format_list + channel_list[i] + ", "
+        i += 1
+    return format_list
 
 
 # Process the data sent in by client
@@ -151,7 +162,7 @@ def process(data, raddr):
     elif key_word == "RECV":
         return recv_pro(data)
     elif key_word == "CHANNELS":
-        return channel_pro(data)
+        return channel_pro()
     else:
         pass
 
