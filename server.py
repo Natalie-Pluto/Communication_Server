@@ -159,7 +159,7 @@ def channel_pro():
     # Format the list
     format_list = "RESULT CHANNELS "
     if len(channel_list) == 0:
-        return "RESULT CHANNELS\n"
+        return "RESULT CHANNELS \n"
     i = 0
     while i < len(channel_list):
         if i == len(channel_list) - 1:
