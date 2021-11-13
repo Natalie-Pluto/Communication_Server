@@ -12,7 +12,7 @@ by using selectors module
 https://www.programmerall.com/article/92511564357/
 '''
 
-#Use this variable for your loop
+# Use this variable for your loop
 daemon_quit = False
 
 # Create instance of selectors
@@ -31,7 +31,7 @@ db_dict = {}
 channels = {}
 
 
-#Do not modify or remove this handler
+# Do not modify or remove this handler
 def quit_gracefully(signum, frame):
     global daemon_quit
     daemon_quit = True
@@ -120,12 +120,38 @@ def create_pro(msg, con):
 
 # Process "SAY :CHANNEL :MESSAGE"
 def say_pro(msg, con):
-    pass
+    channel_name = msg.split(" ")[1].strip()
+    msg = msg.split(" ", 2)[2].strip()
+    found_user = False
+    # Check if this channel exist
+    if channel_name in channels:
+        # Check if the user is logged in
+        for key, value in db_dict.items():
+            for v in value:
+                if v == "socket":
+                    if value[v] == con:
+                        found_user = True
+                        # User is logged in, check if he/she has joined this channel
+                        users_list = channels[channel_name]
+                        if key in users_list:
+                            # User has joined the channel, send the msg to all users in this channel
+                            for user in str(users_list).strip().split(" "):
+                                user_con = db_dict[user]['socket']
+                                user_con.send(recv_pro(msg, key).encode('utf-8'))
+
+                        else:
+                            con.send("ERROR: You Haven't Joined This Channel".encode('utf-8'))
+    else:
+        con.send('ERROR: No Such Channel'.encode('utf-8'))
+
+    # If the user is not logged in
+    if not found_user:
+        con.send('ERROR: Please Log In'.encode('utf-8'))
 
 
 # Process "RECV :USER :CHANNEL :MESSAGE"
-def recv_pro(msg, con):
-    pass
+def recv_pro(msg, username):
+    return 'RECV ' + str(username) + " " + str(msg)
 
 
 # Process "CHANNELS"
@@ -157,10 +183,6 @@ def process(data, con):
         return join_pro(data, con)
     elif key_word == "CREATE":
         return create_pro(data, con)
-    elif key_word == "SAY":
-        return say_pro(data, con)
-    elif key_word == "RECV":
-        return recv_pro(data, con)
     elif key_word == "CHANNELS":
         return channel_pro()
     else:
@@ -174,14 +196,15 @@ def get_data(con, mask):
         # If there's data
         if data:
             # Process the data and send the result to client
-            con.send(process(data.decode('utf-8').strip(), con).encode('utf-8'))
+            if data.decode('utf-8').strip().split(" ")[0].strip() == "SAY":
+                say_pro(data.decode('utf-8').strip(), con)
+            else:
+                con.send(process(data.decode('utf-8').strip(), con).encode('utf-8'))
     except Exception:
         # Close connection
         sele.unregister(con)
         # Close socket
         con.close()
-
-
 
 
 def start_acc(sock, mask):
@@ -208,11 +231,9 @@ def run():
             call_accept = key.data
             call_accept(key.fileobj, mask)
 
-    #Do not modify or remove this function call
+    # Do not modify or remove this function call
     signal.signal(signal.SIGINT, quit_gracefully)
 
 
 if __name__ == '__main__':
     run()
-
-
