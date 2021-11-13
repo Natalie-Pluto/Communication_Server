@@ -131,7 +131,7 @@ def recv_pro(msg, con):
 # Process "CHANNELS"
 def channel_pro():
     # return all channels stored in the dictionary
-    channel_list = list(channels.keys())
+    channel_list = sorted(list(channels.keys()))
     # Format the list
     format_list = "RESULT CHANNELS "
     i = 0
