@@ -23,7 +23,7 @@ According to the clarification on ed, database should avoid persistence.
 Therefore, I decide to use program memory rather than file.
 '''
 # Nested dictionary storing username, password, socket
-# {'username': {'password': 'hashed pwd', 'socket':'raddr/ null'}
+# {'username': {'password': 'hashed pwd', 'socket':'con/ na'}
 db_dict = {}
 
 # Dictionary storing channels and the users joined in each channel
@@ -119,12 +119,12 @@ def create_pro(msg, con):
 
 
 # Process "SAY :CHANNEL :MESSAGE"
-def say_pro(msg):
+def say_pro(msg, con):
     pass
 
 
 # Process "RECV :USER :CHANNEL :MESSAGE"
-def recv_pro(msg):
+def recv_pro(msg, con):
     pass
 
 
@@ -137,7 +137,7 @@ def channel_pro():
     i = 0
     while i < len(channel_list):
         if i == len(channel_list) - 1:
-            format_list = format_list + channel_list[i]
+            format_list = format_list + channel_list[i] + "\n"
         else:
             format_list = format_list + channel_list[i] + ", "
         i += 1
@@ -158,9 +158,9 @@ def process(data, con):
     elif key_word == "CREATE":
         return create_pro(data, con)
     elif key_word == "SAY":
-        return say_pro(data)
+        return say_pro(data, con)
     elif key_word == "RECV":
-        return recv_pro(data)
+        return recv_pro(data, con)
     elif key_word == "CHANNELS":
         return channel_pro()
     else:
