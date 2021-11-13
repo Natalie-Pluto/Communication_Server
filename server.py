@@ -140,12 +140,11 @@ def say_pro(msg, con):
                                 user_con.send(recv_pro(msg, key, channel_name).encode('utf-8'))
                         else:
                             con.send("ERROR: You Haven't Joined This Channel\n".encode('utf-8'))
+        # If the user is not logged in
+        if not found_user:
+            con.send('ERROR: Please Log In\n'.encode('utf-8'))
     else:
         con.send('ERROR: No Such Channel\n'.encode('utf-8'))
-
-    # If the user is not logged in
-    if not found_user:
-        con.send('ERROR: Please Log In\n'.encode('utf-8'))
 
 
 # Process "RECV :USER :CHANNEL :MESSAGE"
@@ -159,6 +158,8 @@ def channel_pro():
     channel_list = sorted(list(channels.keys()))
     # Format the list
     format_list = "RESULT CHANNELS "
+    if len(channel_list) == 0:
+        return "RESULT CHANNELS\n"
     i = 0
     while i < len(channel_list):
         if i == len(channel_list) - 1:
