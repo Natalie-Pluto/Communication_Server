@@ -136,22 +136,21 @@ def say_pro(msg, con):
                         if key in users_list:
                             # User has joined the channel, send the msg to all users in this channel
                             for user in str(users_list).strip().split(" "):
-                                user_con = db_dict[user]['socket']
-                                user_con.send(recv_pro(msg, key).encode('utf-8'))
-
+                                user_con = db_dict[user.strip()]['socket']
+                                user_con.send(recv_pro(msg, key, channel_name).encode('utf-8'))
                         else:
-                            con.send("ERROR: You Haven't Joined This Channel".encode('utf-8'))
+                            con.send("ERROR: You Haven't Joined This Channel\n".encode('utf-8'))
     else:
-        con.send('ERROR: No Such Channel'.encode('utf-8'))
+        con.send('ERROR: No Such Channel\n'.encode('utf-8'))
 
     # If the user is not logged in
     if not found_user:
-        con.send('ERROR: Please Log In'.encode('utf-8'))
+        con.send('ERROR: Please Log In\n'.encode('utf-8'))
 
 
 # Process "RECV :USER :CHANNEL :MESSAGE"
-def recv_pro(msg, username):
-    return 'RECV ' + str(username) + " " + str(msg)
+def recv_pro(msg, username, channel):
+    return 'RECV ' + str(username) + " " + str(channel) + " " + str(msg) + "\n"
 
 
 # Process "CHANNELS"
