@@ -51,12 +51,7 @@ class ServerTest(unittest.TestCase):
         if self.assertEqual(data_list_exp, data_list, "False"):
             self.result_list.append({"test_register_fail1" : "Failed"})
         else:
-            self.result_list.append({"test_register_fail1r" : "Passed"})
-        jsonString = json.dumps(self.result_list, indent=1)
-        jsonFile = open("test_result.json", "w")
-        jsonFile.write(jsonString)
-        jsonFile.close()
-        os.system("ps -ef | grep startServer | grep -v grep | awk '{print $2}' | xargs kill")
+            self.result_list.append({"test_register_fail1" : "Passed"})
 
     # Test successful login
     def test_login1(self):
@@ -222,11 +217,52 @@ class ServerTest(unittest.TestCase):
 
     # Say auccessul
     def test_say(self):
-        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT JOIN Universal 0\n']
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT JOIN Disney 1\n', 'RECV user35 Disney Hello from Mickey\n']
         data_list = []
         sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sk.connect(('localhost', 8080))
-        msg = [b'REGISTER user34 hunter2', b'LOGIN user34 hunter2', b'JOIN Universal']
+        msg = [b'REGISTER user35 hunter2', b'LOGIN user35 hunter2', b'JOIN Disney', b'SAY Disney Hello from Mickey']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+        serv.say_pro(b'SAY Disney Hello from Mickey'.decode('utf-8'), sk)
+        sk.close()
+        # Check the result
+        if self.assertEqual(data_list_exp, data_list, "False"):
+            self.result_list.append({"test_say" : "Failed"})
+        else:
+            self.result_list.append({"test_say" : "Passed"})
+
+
+    # Not exist channel
+    def test_say_fail(self):
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT JOIN Disney 1\n', 'ERROR: No Such Channel\n']
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTER user36 hunter2', b'LOGIN user36 hunter2', b'JOIN Disney', b'SAY Disneyy Hello from Mickey']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+        serv.say_pro(b'SAY Disneyy Hello from Mickey'.decode('utf-8'), sk)
+        sk.close()
+        # Check the result
+        if self.assertEqual(data_list_exp, data_list, "False"):
+            self.result_list.append({"test_say_fail" : "Failed"})
+        else:
+            self.result_list.append({"test_say_fail" : "Passed"})
+
+    # Test list all channels
+    def test_channel(self):
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT CREATE Hi 1\n', 'RESULT CHANNELS Hi\n']
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTER user37 hunter2', b'LOGIN user37 hunter2', b'CREATE Hi', b'CHANNELS']
         serv = server.Server('127.0.0.1', 8080)
         for m in msg:
             serv.process(m.decode('utf-8'), sk)
@@ -236,13 +272,23 @@ class ServerTest(unittest.TestCase):
         sk.close()
         # Check the result
         if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_join_fail" : "Failed"})
+            self.result_list.append({"test_channel": "Failed"})
         else:
-            self.result_list.append({"test_join_fail" : "Passed"})
+            self.result_list.append({"test_channel": "Passed"})
 
 
+    # Kill the server, generate test report
+    def test_zzz(self):
+        jsonString = json.dumps(self.result_list, indent=1)
+        jsonFile = open("test_result.json", "w")
+        jsonFile.write(jsonString)
+        jsonFile.close()
+        os.system("ps -ef | grep serverRunTest | grep -v grep | awk '{print $2}' | xargs kill")
+        os.system("ps -ef | grep startServer | grep -v grep | awk '{print $2}' | xargs kill")
 
 
 if __name__ == '__main__':
     unittest.main()
+
+
 

@@ -10,6 +10,8 @@
 
 `serverTest.py` -> Unittests
 
+`test_result.json` -> Test report
+
 
 ##How to run the tests:
 
@@ -17,7 +19,13 @@
 
 `./runTests.sh`
 
-##Generate Report
+##Generate Test Report
+
+A test report will be generated automatically after running the tests.
+
+`test_result.json`
+
+##Generate Coverage Report
 
 `coverage report -m server.py`
 

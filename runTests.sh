@@ -1,2 +1,3 @@
 python startServer.py &
-coverage run -m unittest serverTest.py server.py
+coverage run -m unittest serverTest.py
+
