@@ -9,7 +9,8 @@ import server
 # https://www.devdungeon.com/content/unit-testing-tcp-server-client-python
 '''
 Test report (Json File) will be generated automatically after all the tests
-have been ran. It will be shown in the same directory.
+have been ran. It will be shown in the same directory
+Please run the test and generate the coverage report using commands addressed in readme
 '''
 
 
