@@ -222,6 +222,7 @@ class Server(object):
                 # Call accept method
                 call_accept = key.data
                 call_accept(key.fileobj, mask)
+
     # Do not modify or remove this function call
     signal.signal(signal.SIGINT, quit_gracefully)
 

@@ -261,20 +261,22 @@ class ServerTest(unittest.TestCase):
             self.result_list.append({"test_say" : "Failed"})
             self.assertEqual(data_list_exp, data_list, "False")
 
-
     # Not exist channel
     def test_say_fail(self):
         data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT JOIN Disney 1\n', 'ERROR: No Such Channel\n']
         data_list = []
         sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sk.connect(('localhost', 8080))
-        msg = [b'REGISTER user36 hunter2', b'LOGIN user36 hunter2', b'JOIN Disney', b'SAY Disneyy Hello from Mickey']
+        msg = [b'REGISTER user38 hunter2', b'LOGIN user38 hunter2', b'JOIN Disney', b'SAY Disneyy Hello from Mickey']
         serv = server.Server('127.0.0.1', 8080)
         for m in msg:
             sk.send(m)
             data = sk.recv(1024)
             data_list.append(data.decode('utf-8'))
-        serv.say_pro(b'SAY Disneyy Hello from Mickey'.decode('utf-8'), sk)
+            if m.decode('utf-8').split(" ")[0] != 'SAY':
+                serv.process(m.decode('utf-8'), sk)
+            else:
+                serv.say_pro(b'SAY Disneyy Hello from Mickey'.decode('utf-8'), sk)
         sk.close()
         # Check the result
         try:
@@ -282,6 +284,31 @@ class ServerTest(unittest.TestCase):
             self.result_list.append({"test_say_fail" : "Passed"})
         except:
             self.result_list.append({"test_say_fail" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
+
+    # Not exist channel
+    def test_say_fail2(self):
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT CREATE Hogwarts 1\n', 'RESULT JOIN Disney 1\n', "ERROR: You Haven't Joined This Channel\n"]
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTER user40 hunter2', b'LOGIN user40 hunter2',  b'CREATE Hogwarts', b'JOIN Disney', b'SAY Hogwarts Hello from Mickey']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+            if m.decode('utf-8').split(" ")[0] != 'SAY':
+                serv.process(m.decode('utf-8'), sk)
+            else:
+                serv.say_pro(b'SAY Hogwarts Hello from Mickey'.decode('utf-8'), sk)
+        sk.close()
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_say_fail2" : "Passed"})
+        except:
+            self.result_list.append({"test_say_fail2" : "Failed"})
             self.assertEqual(data_list_exp, data_list, "False")
 
     # Test list all channels
@@ -305,6 +332,7 @@ class ServerTest(unittest.TestCase):
         except:
             self.result_list.append({"test_channel": "Failed"})
             self.assertEqual(data_list_exp, data_list, "False")
+
 
 
 
