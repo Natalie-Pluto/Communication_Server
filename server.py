@@ -223,8 +223,8 @@ class Server(object):
                 call_accept = key.data
                 call_accept(key.fileobj, mask)
 
-        # Do not modify or remove this function call
-        signal.signal(signal.SIGINT, self.quit_gracefully)
+            # Do not modify or remove this function call
+            signal.signal(signal.SIGINT, self.quit_gracefully)
 
 
 if __name__ == '__main__':

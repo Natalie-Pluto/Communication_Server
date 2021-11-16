@@ -2,12 +2,15 @@ import json
 import os
 import unittest
 import socket
-
+import server
 # Unittests for server.py
 # Referenced the follow website:
 # https://www.sealights.io/agile-testing/test-metrics/python-code-coverage/
 # https://www.devdungeon.com/content/unit-testing-tcp-server-client-python
-import server
+'''
+Test report (Json File) will be generated automatically after all the tests
+have been ran. It will be shown in the same directory.
+'''
 
 
 class ServerTest(unittest.TestCase):
