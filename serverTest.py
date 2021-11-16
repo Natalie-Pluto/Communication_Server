@@ -28,10 +28,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_register" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_register" : "Passed"})
+        except:
+            self.result_list.append({"test_register" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Test duplicate username
     def test_register_fail1(self):
@@ -48,10 +50,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_register_fail1" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_register_fail1" : "Passed"})
+        except:
+            self.result_list.append({"test_register_fail1" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Test successful login
     def test_login1(self):
@@ -68,10 +72,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_login1" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_login1" : "Passed"})
+        except:
+            self.result_list.append({"test_login1" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # User not exist
     def test_login_fail(self):
@@ -88,10 +94,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_login_fail" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_login_fail" : "Passed"})
+        except:
+            self.result_list.append({"test_login_fail" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Same client can't login twice
     def test_login_fail2(self):
@@ -108,10 +116,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_login_fail2" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_login_fail2" : "Passed"})
+        except:
+            self.result_list.append({"test_login_fail2" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Wrong password
     def test_login_fail3(self):
@@ -128,10 +138,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_login_fail3" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_login_fail3" : "Passed"})
+        except:
+            self.result_list.append({"test_login_fail3" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Successful create channel
     def test_create(self):
@@ -148,10 +160,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_create" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_create" : "Passed"})
+        except:
+            self.result_list.append({"test_create" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
 
     # Can't create duplicate channel
@@ -169,10 +183,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_create_fail" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_create_fail" : "Passed"})
+        except:
+            self.result_list.append({"test_create_fail" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Successful join channel
     def test_join(self):
@@ -189,10 +205,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_join" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_join" : "Passed"})
+        except:
+            self.result_list.append({"test_join" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Failed join channel
     def test_join_fail(self):
@@ -209,10 +227,12 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_join_fail" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_join_fail" : "Passed"})
+        except:
+            self.result_list.append({"test_join_fail" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
 
     # Say auccessul
@@ -230,10 +250,12 @@ class ServerTest(unittest.TestCase):
         serv.say_pro(b'SAY Disney Hello from Mickey'.decode('utf-8'), sk)
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_say" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_say" : "Passed"})
+        except:
+            self.result_list.append({"test_say" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
 
     # Not exist channel
@@ -251,10 +273,12 @@ class ServerTest(unittest.TestCase):
         serv.say_pro(b'SAY Disneyy Hello from Mickey'.decode('utf-8'), sk)
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_say_fail" : "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_say_fail" : "Passed"})
+        except:
+            self.result_list.append({"test_say_fail" : "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Test list all channels
     def test_channel(self):
@@ -271,10 +295,16 @@ class ServerTest(unittest.TestCase):
             data_list.append(data.decode('utf-8'))
         sk.close()
         # Check the result
-        if self.assertEqual(data_list_exp, data_list, "False"):
-            self.result_list.append({"test_channel": "Failed"})
-        else:
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
             self.result_list.append({"test_channel": "Passed"})
+        except:
+            self.result_list.append({"test_channel": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
+
+
+
+
 
 
     # Kill the server, generate test report
@@ -283,7 +313,6 @@ class ServerTest(unittest.TestCase):
         jsonFile = open("test_result.json", "w")
         jsonFile.write(jsonString)
         jsonFile.close()
-        os.system("ps -ef | grep serverRunTest | grep -v grep | awk '{print $2}' | xargs kill")
         os.system("ps -ef | grep startServer | grep -v grep | awk '{print $2}' | xargs kill")
 
 

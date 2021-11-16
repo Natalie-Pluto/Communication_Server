@@ -1,0 +1,41 @@
+[
+ {
+  "test_channel": "Passed"
+ },
+ {
+  "test_create": "Passed"
+ },
+ {
+  "test_create_fail": "Passed"
+ },
+ {
+  "test_join": "Passed"
+ },
+ {
+  "test_join_fail": "Passed"
+ },
+ {
+  "test_login1": "Passed"
+ },
+ {
+  "test_login_fail": "Passed"
+ },
+ {
+  "test_login_fail2": "Passed"
+ },
+ {
+  "test_login_fail3": "Passed"
+ },
+ {
+  "test_register": "Passed"
+ },
+ {
+  "test_register_fail1": "Passed"
+ },
+ {
+  "test_say": "Passed"
+ },
+ {
+  "test_say_fail": "Passed"
+ }
+]
