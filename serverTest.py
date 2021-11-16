@@ -311,7 +311,43 @@ class ServerTest(unittest.TestCase):
             self.result_list.append({"test_say_fail2" : "Failed"})
             self.assertEqual(data_list_exp, data_list, "False")
 
-    # Test list all channels
+    # RECV method test
+    def test_recv(self):
+        data_list_exp = ['RECV user35 Disney Hello from Mickey\n']
+        data_list = ['RECV user35 Disney Hello from Mickey\n']
+        serv = server.Server('127.0.0.1', 8080)
+        serv.recv_pro('Disney Hello from Micke', 'user35', 'Disney')
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_recv": "Passed"})
+        except:
+            self.result_list.append({"test_recv": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
+
+    # Test list all channels (empty)
+    def test_achannel0(self):
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT CHANNELS \n']
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTER user55 hunter2', b'LOGIN user55 hunter2', b'CHANNELS']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            serv.process(m.decode('utf-8'), sk)
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+        sk.close()
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_channel0": "Passed"})
+        except:
+            self.result_list.append({"test_channel0": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
+
+    # Test list all channels (single)
     def test_channel(self):
         data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT CREATE Hi 1\n', 'RESULT CHANNELS Hi\n']
         data_list = []
@@ -333,11 +369,64 @@ class ServerTest(unittest.TestCase):
             self.result_list.append({"test_channel": "Failed"})
             self.assertEqual(data_list_exp, data_list, "False")
 
+    # Test list all channels (multiple)
+    def test_channel2(self):
+        data_list_exp = ['RESULT REGISTER 1\n', 'RESULT LOGIN 1\n', 'RESULT CREATE Syd 1\n', 'RESULT CHANNELS Hi, Syd\n']
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTER user52 hunter2', b'LOGIN user52 hunter2', b'CREATE Syd', b'CHANNELS']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            serv.process(m.decode('utf-8'), sk)
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+        sk.close()
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_channel": "Passed"})
+        except:
+            self.result_list.append({"test_channel": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
+    # Test invalid command
+    def test_invalid_command(self):
+        data_list_exp = ['Error: Please check the command\n']
+        data_list = []
+        sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sk.connect(('localhost', 8080))
+        msg = [b'REGISTE user59 hunter2']
+        serv = server.Server('127.0.0.1', 8080)
+        for m in msg:
+            serv.process(m.decode('utf-8'), sk)
+            sk.send(m)
+            data = sk.recv(1024)
+            data_list.append(data.decode('utf-8'))
+        sk.close()
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_invalid_command": "Passed"})
+        except:
+            self.result_list.append({"test_invalid_command": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
-
-
-
+    # Test run
+    def test_run(self):
+        data_list_exp = []
+        data_list = []
+        serv = server.Server('127.0.0.1', 9090)
+        serv.daemon_quit = True
+        serv.run()
+        # Check the result
+        try:
+            self.assertEqual(data_list_exp, data_list, "False")
+            self.result_list.append({"test_run": "Passed"})
+        except:
+            self.result_list.append({"test_run": "Failed"})
+            self.assertEqual(data_list_exp, data_list, "False")
 
     # Kill the server, generate test report
     def test_zzz(self):

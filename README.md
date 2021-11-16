@@ -29,5 +29,14 @@ A test report will be generated automatically after running the tests.
 
 `coverage report -m server.py`
 
+### Coverage Report For Last Submission
+```
+Name        Stmts   Miss  Cover   Missing
+-----------------------------------------
+server.py     141     24    83%   42, 138-140, 190-203, 207-210, 220-224, 231-234
+-----------------------------------------
+TOTAL         141     24    83%
+```
+
 
 

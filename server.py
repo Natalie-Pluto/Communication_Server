@@ -183,7 +183,7 @@ class Server(object):
         elif key_word == "CHANNELS":
             return self.channel_pro()
         else:
-            pass
+            return "Error: Please check the command\n"
 
     # Get data
     def get_data(self, con, mask):
